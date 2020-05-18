@@ -1,17 +1,6 @@
 RSpec.describe Omnom::Producer do
-  let :counter_class do
-    Struct.new(:count) do
-      def fetch(demand)
-        old_count = count
-        self.count += demand
-
-        ((old_count + 1)..count).to_a
-      end
-    end
-  end
-
   let(:poll_interval_ms) { 50 }
-  let(:adapter) { counter_class.new(0) }
+  let(:adapter) { Support::Adapter::Counter.new }
 
   let :config do
     described_class::Config.new(
@@ -28,8 +17,8 @@ RSpec.describe Omnom::Producer do
       subscription_2 = subject.subscribe(2)
 
       sleep(0.1)
-      expect(subscription_1.full?).to eq true
-      expect(subscription_2.full?).to eq true
+      expect(subscription_1.missing).to eq 0
+      expect(subscription_2.missing).to eq 0
 
       value_1 = subscription_1.pop
       value_2 = subscription_2.pop
@@ -38,8 +27,8 @@ RSpec.describe Omnom::Producer do
       expect([1, 2, 3]).to include(value_2)
 
       sleep(0.1)
-      expect(subscription_1.full?).to eq true
-      expect(subscription_2.full?).to eq true
+      expect(subscription_1.missing).to eq 0 
+      expect(subscription_2.missing).to eq 0 
 
       values = [
         value_1,
@@ -58,13 +47,14 @@ RSpec.describe Omnom::Producer do
       subscription = subject.subscribe(1)
 
       sleep(0.1)
-      expect(subscription.full?).to eq true
+      expect(subscription.missing).to eq 0 
 
       subject.unsubscribe(subscription)
       subscription.pop
 
       sleep(0.1)
-      expect(subscription.full?).to eq false
+      expect(subscription.missing).to eq 1 
+      expect(subscription.terminated?).to eq true
     end
   end
 end

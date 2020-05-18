@@ -20,7 +20,7 @@ module Omnom
 
     def unsubscribe(subscription)
       subscription = subscriptions.delete(subscription)
-      subscription.shutdown
+      subscription.terminate
     end
     
     private
