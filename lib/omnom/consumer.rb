@@ -1,4 +1,5 @@
 require 'concurrent'
+
 require 'omnom/consumer/config'
 
 module Omnom

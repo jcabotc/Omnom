@@ -1,4 +1,5 @@
 require 'concurrent'
+
 require 'omnom/producer/config'
 require 'omnom/producer/subscription'
 
@@ -8,7 +9,7 @@ module Omnom
       @adapter = config.adapter
       @subscriptions = Concurrent::Array.new
 
-      start_timer_task(config)
+      start_recurrent_demand_handling(config)
     end
 
     def subscribe(demand)
@@ -23,10 +24,10 @@ module Omnom
     
     private
 
-    def start_timer_task(config)
-      interval = config.poll_interval_ms / 1000.0
+    def start_recurrent_demand_handling(config)
+      interval_s = config.poll_interval_ms / 1000.0
 
-      task = Concurrent::TimerTask.new(execution_interval: interval) { handle_demand }
+      task = Concurrent::TimerTask.new(execution_interval: interval_s) { handle_demand }
       task.execute
     end
 

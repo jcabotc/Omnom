@@ -7,28 +7,46 @@ module Omnom
 
       def initialize(demand)
         @demand = demand
-        @buffer = Concurrent::Array.new
+        @queue = Concurrent::Array.new
+        @blocked_pop = nil
       end
 
       def full?
-        demand <= buffer.size
+        demand <= queue.size
       end
 
       def missing
-        demand - buffer.size
+        demand - queue.size
       end
 
       def push(messages)
-        buffer.push(*messages)
+        queue.push(*messages)
+
+        maybe_unblock_pop
       end
 
       def pop
-        buffer.shift
+        block_until_pushed if queue.empty?
+
+        queue.shift
       end
 
       private
 
-      attr_reader :buffer
+      def block_until_pushed
+        self.blocked_pop = Concurrent::Promises.resolvable_future()
+        blocked_pop.wait
+      end
+
+      def maybe_unblock_pop
+        if blocked_pop
+          blocked_pop.resolve
+          self.blocked_pop = nil
+        end
+      end
+
+      attr_reader :queue
+      attr_accessor :blocked_pop
     end
   end
 end
