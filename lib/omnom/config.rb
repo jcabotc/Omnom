@@ -20,8 +20,8 @@ module Omnom
       raw_config.fetch(:poll_interval_ms, 250)
     end
 
-    def pool_size
-      raw_config.fetch(:pool_size, 2)
+    def concurrency
+      raw_config.fetch(:concurrency, 20)
     end
 
     private

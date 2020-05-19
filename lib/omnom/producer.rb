@@ -7,8 +7,9 @@ module Omnom
     def initialize(config)
       @adapter = config.adapter
       @buffer = Buffer.new(config.buffer_size)
+      @recurring_task = build_recurring_task_to_fill_buffer(config)
 
-      start_recurring_task_to_fill_buffer(config)
+      recurring_task.execute
     end
 
     def pop
@@ -16,16 +17,16 @@ module Omnom
     end
 
     def stop
+      recurring_task.shutdown
       buffer.terminate
     end
 
     private
 
-    def start_recurring_task_to_fill_buffer(config)
+    def build_recurring_task_to_fill_buffer(config)
       interval_s = config.poll_interval_ms / 1000.0
 
-      task = Concurrent::TimerTask.new(execution_interval: interval_s) { fill_buffer }
-      task.execute
+      Concurrent::TimerTask.new(execution_interval: interval_s) { fill_buffer }
     end
 
     def fill_buffer
@@ -43,6 +44,6 @@ module Omnom
       []
     end
 
-    attr_reader :adapter, :buffer
+    attr_reader :adapter, :buffer, :recurring_task
   end
 end

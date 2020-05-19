@@ -5,8 +5,11 @@ module Omnom
     def initialize(producer, config)
       @stream = Stream.new(producer)
       @handler = config.handler
+      @thread = Thread.new { consume }
+    end
 
-      Thread.new { consume }
+    def wait_for_termination
+      thread.join
     end
 
     private
@@ -28,6 +31,6 @@ module Omnom
       false
     end
 
-    attr_reader :stream, :handler
+    attr_reader :stream, :handler, :thread
   end
 end

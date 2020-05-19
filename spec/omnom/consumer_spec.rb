@@ -9,8 +9,7 @@ RSpec.describe Omnom::Consumer do
 
   describe "asynchronous messages consumption" do
     it "happy path" do
-      subject
-      sleep(0.1) # wait for the consumer to consume all messages
+      subject.wait_for_termination
 
       expect(handler.received_messages).to eq messages
 
@@ -21,8 +20,7 @@ RSpec.describe Omnom::Consumer do
     it "retries if handler returns false" do
       handler.return_false_on(:message_2)
 
-      subject
-      sleep(0.1) # wait for the consumer to consume all messages
+      subject.wait_for_termination
 
       expected_messages = messages + [:message_2]
       expect(handler.received_messages).to match_array expected_messages
@@ -34,8 +32,7 @@ RSpec.describe Omnom::Consumer do
     it "retries if handler raises" do
       handler.raise_on(:message_3)
 
-      subject
-      sleep(0.1) # wait for the consumer to consume all messages
+      subject.wait_for_termination
 
       expected_messages = messages + [:message_3]
       expect(handler.received_messages).to match_array expected_messages
