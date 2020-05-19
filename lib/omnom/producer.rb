@@ -2,6 +2,7 @@ require 'concurrent'
 
 require 'omnom/producer/config'
 require 'omnom/producer/subscription'
+require 'omnom/producer/buffer'
 
 module Omnom
   class Producer
