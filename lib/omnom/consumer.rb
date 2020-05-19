@@ -1,25 +1,21 @@
-require 'concurrent'
+require "omnom/consumer/stream"
 
 module Omnom
   class Consumer
-    attr_reader :config
-
-    def initialize(config)
-      @pool = start_pool(config)
+    def initialize(producer, config)
+      @stream = Stream.new(producer)
       @handler = config.handler
-    end
 
-    def handle(message)
-      pool.post(message) do |message|
-        safe_handle(message)
-      end
-    end
-
-    def stop
-      pool.shutdown
+      Thread.new { run }
     end
 
     private
+
+    def run
+      stream.each do |message|
+        safe_handle(message)
+      end
+    end
 
     def safe_handle(message)
       handler.handle(message)
@@ -27,10 +23,6 @@ module Omnom
       # handle error
     end
 
-    def start_pool(config)
-      Concurrent::FixedThreadPool.new(config.pool_size)
-    end
-
-    attr_reader :pool, :handler
+    attr_reader :stream, :handler
   end
 end

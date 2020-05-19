@@ -1,30 +1,18 @@
-require 'concurrent'
-
 RSpec.describe Omnom::Consumer do
+  let(:messages) { [:message_1, :message_2, :message_3] }
+  let(:producer) { Support::Producer::Fixed.new(messages.dup) }
+
+  let(:handler) { Support::Consumer::Handler.new() }
+  let(:config) { Omnom::Config.new(handler: handler) }
+
+  subject { described_class.new(producer, config) }
+
   it "asynchronously consumes messages" do
-    handler = Module.new do
-      def handle(message)
-        message[:ivar].set("done")
-      end
+    subject
 
-      module_function :handle
-    end
+    # wait for the consumer to consume all messages
+    sleep(0.1)
 
-    config = Omnom::Config.new(pool_size: 2, handler: handler)
-    consumer = described_class.new(config)
-
-    ivar_1 = Concurrent::IVar.new
-    ivar_2 = Concurrent::IVar.new
-    ivar_3 = Concurrent::IVar.new
-
-    consumer.handle({ivar: ivar_1})
-    consumer.handle({ivar: ivar_2})
-    consumer.handle({ivar: ivar_3})
-
-    expect(ivar_1.value).to eq "done"
-    expect(ivar_2.value).to eq "done"
-    expect(ivar_3.value).to eq "done"
-
-    consumer.stop
+    expect(handler.received_messages).to eq messages
   end
 end

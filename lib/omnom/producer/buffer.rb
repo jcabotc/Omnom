@@ -28,6 +28,7 @@ module Omnom
 
       def terminate
         terminating.make_true
+        waiting.each { |future| future.fulfill(nil) }
       end
 
       private
