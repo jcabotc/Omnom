@@ -1,4 +1,5 @@
 require "omnom/config"
+require "omnom/adapter/google_pubsub"
 require "omnom/producer"
 require "omnom/consumer"
 

@@ -1,7 +1,7 @@
 RSpec.describe Omnom do
-  let(:adapter) { Support::TestAdapter.new(1..200) }
+  let(:adapter) { Support::TestAdapter.new(1..30) }
   let(:handler) { Support::TestHandler.new() }
-  let(:buffer_size) { 25 }
+  let(:buffer_size) { 8 }
   let(:poll_interval_ms) { 5 }
   let(:concurrency) { 4 }
 
@@ -25,7 +25,7 @@ RSpec.describe Omnom do
       # Wait for the engine to process all messages
 
       subject.stop
-      expect(handler.received_messages).to match_array (1..200).to_a
+      expect(handler.received_messages).to match_array (1..30).to_a
     end
   end
 end
