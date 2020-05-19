@@ -13,7 +13,11 @@ module Omnom
 
     def consume
       stream.each do |received|
-        safe_handle(received.message)
+        if safe_handle(received.message)
+          received.ack
+        else
+          received.no_ack
+        end
       end
     end
 
@@ -21,6 +25,7 @@ module Omnom
       handler.handle(message)
     rescue StandardError => e
       # handle error
+      false
     end
 
     attr_reader :stream, :handler
