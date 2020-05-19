@@ -1,6 +1,5 @@
 require 'concurrent'
 
-require 'omnom/producer/config'
 require 'omnom/producer/buffer'
 
 module Omnom

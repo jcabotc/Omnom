@@ -1,8 +1,6 @@
-require_relative 'lib/omnom/version'
-
 Gem::Specification.new do |spec|
   spec.name          = "omnom"
-  spec.version       = Omnom::VERSION
+  spec.version       = "0.1.0"
   spec.authors       = ["Jaime Cabot"]
   spec.email         = ["jcabot@gmail.com"]
 

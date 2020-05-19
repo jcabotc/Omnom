@@ -1,16 +1,31 @@
 module Omnom
   class Config
-    DEFAULTS = {
-      buffer_size: 100,
-      poll_interval_ms: 250
-    }
-
-    attr_reader :adapter, :buffer_size, :poll_interval_ms
-
-    def initialize(opts)
-      @adapter = opts.fetch(:adapter)
-      @buffer_size = opts.fetch(:buffer_size, DEFAULT[:buffer_size])
-      @poll_interval_ms = opts.fetch(:poll_interval_ms, DEFAULT[:poll_interval_ms])
+    def initialize(raw_config)
+      @raw_config = raw_config
     end
+
+    def adapter
+      raw_config.fetch(:adapter)
+    end
+
+    def handler
+      raw_config.fetch(:handler)
+    end
+
+    def buffer_size
+      raw_config.fetch(:buffer_size, 100)
+    end
+
+    def poll_interval_ms
+      raw_config.fetch(:poll_interval_ms, 250)
+    end
+
+    def pool_size
+      raw_config.fetch(:pool_size, 2)
+    end
+
+    private
+
+    attr_reader :raw_config
   end
 end

@@ -1,7 +1,5 @@
 require 'concurrent'
 
-require 'omnom/consumer/config'
-
 module Omnom
   class Consumer
     attr_reader :config

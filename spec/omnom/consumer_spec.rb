@@ -10,7 +10,7 @@ RSpec.describe Omnom::Consumer do
       module_function :handle
     end
 
-    config = described_class::Config.new(pool_size: 2, handler: handler)
+    config = Omnom::Config.new(pool_size: 2, handler: handler)
     consumer = described_class.new(config)
 
     ivar_1 = Concurrent::IVar.new

@@ -4,7 +4,7 @@ RSpec.describe Omnom::Producer do
   let(:poll_interval_ms) { 20 }
 
   let :config do
-    described_class::Config.new(
+    Omnom::Config.new(
       adapter: adapter,
       buffer_size: buffer_size,
       poll_interval_ms: poll_interval_ms
