@@ -53,4 +53,21 @@ RSpec.describe Omnom::Producer::Buffer do
       expect(subject.missing).to eq 1
     end
   end
+
+  describe "#terminate" do
+    let(:adapter) { Support::TestAdapter.new([]) }
+
+    it "unblocks all blocked callers by returning nil" do
+      thread_1 = Thread.new { subject.pop }
+      thread_2 = Thread.new { subject.pop }
+
+      sleep(0.04)
+      expect(thread_1.alive?).to eq true
+      expect(thread_2.alive?).to eq true
+
+      subject.terminate
+      expect(thread_1.value).to eq nil
+      expect(thread_2.value).to eq nil
+    end
+  end
 end

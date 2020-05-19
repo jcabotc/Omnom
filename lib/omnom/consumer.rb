@@ -6,14 +6,14 @@ module Omnom
       @stream = Stream.new(producer)
       @handler = config.handler
 
-      Thread.new { run }
+      Thread.new { consume }
     end
 
     private
 
-    def run
-      stream.each do |message|
-        safe_handle(message)
+    def consume
+      stream.each do |received|
+        safe_handle(received.message)
       end
     end
 

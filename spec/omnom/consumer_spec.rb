@@ -1,8 +1,8 @@
 RSpec.describe Omnom::Consumer do
   let(:messages) { [:message_1, :message_2, :message_3] }
-  let(:producer) { Support::Producer::Fixed.new(messages.dup) }
+  let(:producer) { Support::TestProducer.new(messages) }
 
-  let(:handler) { Support::Consumer::Handler.new() }
+  let(:handler) { Support::TestHandler.new() }
   let(:config) { Omnom::Config.new(handler: handler) }
 
   subject { described_class.new(producer, config) }
