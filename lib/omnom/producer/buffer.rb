@@ -4,14 +4,14 @@ module Omnom
   class Producer
     class Buffer
       def initialize(size)
-        @max_size = size
+        @size = size
         @queue = Concurrent::Array.new
         @waiting = Concurrent::Array.new
-        @terminating = false
+        @terminating = Concurrent::AtomicBoolean.new(false)
       end
 
       def missing
-        max_size - queue.size
+        size - queue.size
       end
 
       def push_many(messages)
@@ -27,13 +27,13 @@ module Omnom
       end
 
       def terminate
-        self.terminating = true
+        terminating.make_true
       end
 
       private
 
       def maybe_wait
-        if not terminated?
+        if terminating.false?
           future = Concurrent::Promises.resolvable_future
           waiting.push(future)
 
@@ -41,12 +41,7 @@ module Omnom
         end
       end
 
-      def terminated?
-        terminating and queue.empty?
-      end
-
-      attr_reader :max_size, :queue, :waiting
-      attr_accessor :terminating
+      attr_reader :size, :queue, :waiting, :terminating
     end
   end
 end

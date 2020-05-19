@@ -1,45 +1,39 @@
 require 'concurrent'
 
 require 'omnom/producer/config'
-require 'omnom/producer/subscription'
 require 'omnom/producer/buffer'
 
 module Omnom
   class Producer
     def initialize(config)
       @adapter = config.adapter
-      @subscriptions = Concurrent::Array.new
+      @buffer = Buffer.new(config.buffer_size)
 
-      start_recurrent_demand_handling(config)
+      start_recurring_task_to_fill_buffer(config)
     end
 
-    def subscribe(demand)
-      Subscription.new(demand).tap do |subscription|
-        subscriptions.push(subscription)
-      end
+    def pop
+      buffer.pop
     end
 
-    def unsubscribe(subscription)
-      subscription = subscriptions.delete(subscription)
-      subscription.terminate
+    def stop
+      buffer.terminate
     end
-    
+
     private
 
-    def start_recurrent_demand_handling(config)
+    def start_recurring_task_to_fill_buffer(config)
       interval_s = config.poll_interval_ms / 1000.0
 
-      task = Concurrent::TimerTask.new(execution_interval: interval_s) { handle_demand }
+      task = Concurrent::TimerTask.new(execution_interval: interval_s) { fill_buffer }
       task.execute
     end
 
-    def handle_demand
-      missing = subscriptions.map(&:missing).reduce(0, &:+)
+    def fill_buffer
+      if buffer.missing > 0
+        messages = safe_fetch(buffer.missing)
 
-      if missing > 0
-        messages = safe_fetch(missing)
-
-        spread_between_subscriptions(messages)
+        buffer.push_many(messages)
       end
     end
 
@@ -50,15 +44,6 @@ module Omnom
       []
     end
 
-    def spread_between_subscriptions(messages)
-      subscriptions.shuffle.each do |subscription|
-        missing = subscription.missing
-        popped_messages = messages.pop(missing)
-        
-        subscription.push(popped_messages)
-      end
-    end
-
-    attr_reader :adapter, :subscriptions
+    attr_reader :adapter, :buffer
   end
 end
