@@ -1,6 +1,6 @@
 require 'concurrent'
 
-module Omnom
+class Omnom
   class Producer
     class Buffer
       def initialize(size)

@@ -1,4 +1,4 @@
-module Omnom
+class Omnom
   class Consumer
     class Stream
       include Enumerable

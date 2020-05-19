@@ -1,4 +1,4 @@
-module Omnom
+class Omnom
   class Config
     def initialize(raw_config)
       @raw_config = raw_config

@@ -1,6 +1,6 @@
 require "omnom/consumer/stream"
 
-module Omnom
+class Omnom
   class Consumer
     def initialize(producer, config)
       @stream = Stream.new(producer)

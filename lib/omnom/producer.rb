@@ -2,7 +2,7 @@ require 'concurrent'
 
 require 'omnom/producer/buffer'
 
-module Omnom
+class Omnom
   class Producer
     def initialize(config)
       @adapter = config.adapter
