@@ -108,6 +108,12 @@ Before using this library in production it should implement some observability m
   - Message `ack` rate.
   - Message `no_ack` rate.
 
+### Batching
+
+After a message is handled, it is automatically acked. This approach is the one that has the higher probability of successful acknowledge per message, but it is also wastes a lot of resources by performing a HTTP request per message.
+
+It would be great to optionally support batching, not only for acks, but also for message handling.
+
 ### Refilling the buffer
 
 While the current refilling strategy of polling for missing messages every `poll_interval_ms` milliseconds works fine for many use cases, it is highly dependent on the correct configuration for every use case.

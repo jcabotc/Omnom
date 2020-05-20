@@ -27,20 +27,20 @@ class Omnom
     def safe_handle(message)
       handler.handle(message)
     rescue StandardError => e
-      # handle error
+      # TODO: Report error
       false
     end
 
     def safe_ack(received)
       received.ack
     rescue StandardError => e
-      # handle error
+      # TODO: Report error
     end
 
     def safe_no_ack(received)
       received.no_ack
     rescue StandardError => e
-      # handle error
+      # TODO: Report error
     end
 
     attr_reader :stream, :handler, :thread

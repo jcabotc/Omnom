@@ -40,7 +40,7 @@ class Omnom
     def safe_fetch(missing)
       adapter.fetch(missing)
     rescue StandardError => e
-      # handle error
+      # TODO: Report error
       []
     end
 
