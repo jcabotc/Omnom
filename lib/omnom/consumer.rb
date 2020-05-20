@@ -17,9 +17,9 @@ class Omnom
     def consume
       stream.each do |received|
         if safe_handle(received.message)
-          received.ack
+          safe_ack(received)
         else
-          received.no_ack
+          safe_no_ack(received)
         end
       end
     end
@@ -29,6 +29,18 @@ class Omnom
     rescue StandardError => e
       # handle error
       false
+    end
+
+    def safe_ack(received)
+      received.ack
+    rescue StandardError => e
+      # handle error
+    end
+
+    def safe_no_ack(received)
+      received.no_ack
+    rescue StandardError => e
+      # handle error
     end
 
     attr_reader :stream, :handler, :thread
